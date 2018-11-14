@@ -1,0 +1,8 @@
+# --minimal Минимальная конфигурци
+# --force Перезаписать файл Vagrantfile
+# -m -f Сокращения команд
+vagrant init ubuntu/xenial64 --minimal
+vagrant init ubuntu/xenial64 --minimal --force
+vagrant init ubuntu/xenial64 -m -f
+
+vagrant up
