@@ -1,17 +1,17 @@
-# --minimal Минимальная конфигурци
-# --force Перезаписать файл Vagrantfile
-# -m -f Сокращения команд
+п»ї# --minimal РњРёРЅРёРјР°Р»СЊРЅР°СЏ РєРѕРЅС„РёРіСѓСЂС†Рё
+# --force РџРµСЂРµР·Р°РїРёСЃР°С‚СЊ С„Р°Р№Р» Vagrantfile
+# -m -f РЎРѕРєСЂР°С‰РµРЅРёСЏ РєРѕРјР°РЅРґ
 vagrant init ubuntu/xenial64 --minimal
 vagrant init ubuntu/xenial64 --minimal --force
 vagrant init ubuntu/xenial64 -m -f
 
-# Стартуем, статус, подключение по ssh или rdp
+# РЎС‚Р°СЂС‚СѓРµРј, СЃС‚Р°С‚СѓСЃ, РїРѕРґРєР»СЋС‡РµРЅРёРµ РїРѕ ssh РёР»Рё rdp
 vagrant up
 vagrant status
 vagrant ssh
 vagrant rdp
-vagrant box add <имя сборки> <url для загрузки>
+vagrant box add <РёРјСЏ СЃР±РѕСЂРєРё> <url РґР»СЏ Р·Р°РіСЂСѓР·РєРё>
 
-# Уничтожаем ВМ
+# РЈРЅРёС‡С‚РѕР¶Р°РµРј Р’Рњ
 vagrant halt
 vagrant destroy
