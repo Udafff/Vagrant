@@ -5,4 +5,13 @@ vagrant init ubuntu/xenial64 --minimal
 vagrant init ubuntu/xenial64 --minimal --force
 vagrant init ubuntu/xenial64 -m -f
 
+# Стартуем, статус, подключение по ssh или rdp
 vagrant up
+vagrant status
+vagrant ssh
+vagrant rdp
+vagrant box add <имя сборки> <url для загрузки>
+
+# Уничтожаем ВМ
+vagrant halt
+vagrant destroy
