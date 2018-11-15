@@ -1,34 +1,52 @@
+
+#### Переменные
 vm_name = "debian-vm01"
-vm_net_name = "default"
+vm_net_name = "default" # Имя для сети интерфейса, Private network (Внутренняя сеть)
 vm_nic1_ip = "192.168.1.10"
 
+
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/jessie64"
-  config.vm.hostname = "#{vm_name}"
-  config.vm.define "#{vm_name}"
 
-  config.ssh.insert_key = false
-  config.vm.boot_timeout = 800
+  config.vm.box = "debian/jessie64"   # Бокс-шаблон для ВМ
+  config.vm.box_check_update = false  # Отключаем проверку свежего бокса при запуске ВМ
 
+  config.vm.hostname = "#{vm_name}"   # Имя хоста "внутри" ВМ
+  config.vm.define "#{vm_name}"       # Имя для работы с ВМ в консоли с помощью команды vagrant
+  config.vm.boot_timeout = 800        # Время (сек.) на загрузку ВМ, которое Vagrant будет ожидать
+
+#### Настройка аутентификации
+  config.ssh.insert_key = false # Отключаем автоматическую подстановку ключей
+
+  # Подготовка своих ssh ключей
   # mkdir -p ./keys/.ssh
   # ssh-keygen -f ./keys/.ssh/vagrant_rsa
+
+  #--- Используем подготовленные ключи
   #config.ssh.private_key_path = ["keys/.ssh/vagrant_rsa", "~/.vagrant.d/insecure_private_key"]
   #config.vm.provision "file", source: "keys/.ssh/vagrant_rsa.pub", destination: "~/.ssh/authorized_keys"
-  #---
-  config.ssh.private_key_path = ["~/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
-  config.vm.provision "file", source: "./id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  #--- Либо испольщзуем ключи пользователя в хостовой ОС
+  config.ssh.private_key_path = ["~/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]  # Копируем приватный ключ для использования его командой "vagrant ssh"
+  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys" # Добавляем открытый ключ в authorized_keys
 
+#### Настройка общих папок
   config.vm.synced_folder "srv/", "/srv", type: "rsync"
-  config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true
+  config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true # Отключаем папки создаваемые по умолчанию
 
-  config.vm.network "private_network", ip: "#{vm_nic1_ip}",
-    virtualbox__intnet: "#{vm_net_name}"
+#### Настройка сети
+  config.vm.network "private_network", type: "dhcp",
+  # config.vm.network "private_network", ip: "#{vm_nic1_ip}",
+    virtualbox__intnet: "#{vm_net_name}" # Имя для сети интерфейса, Private network (Внутренняя сеть)
 
+  config.vm.network "public_network", type: "dhcp"
+
+
+#### Настройка провайдера виртуализации (VirtualBox). Т.е. это настройки самого гипревизора
+# customize использует команды "VBoxManage.exe"
   config.vm.provider "virtualbox" do |v|
-    v.name = "#{vm_name}"
-    #vb.customize ["modifyvm", :id, "--groups", "/Vagrant"]
-    v.memory = "2048"
-    v.customize ["modifyvm", :id, "--vram", "128"]
-    v.cpus = 2
+    v.name = "#{vm_name}" # Имя ВМ в VirtualBox
+    #vb.customize ["modifyvm", :id, "--groups", "/Vagrant"] # Группировка ВМ
+    v.memory = "2048" # ОЗУ
+    v.customize ["modifyvm", :id, "--vram", "128"] # Видеопамять
+    v.cpus = 2 # Виртуальные CPU
   end
 end
