@@ -1,0 +1,59 @@
+# Требуется доработать! Реализовать вариант добавления пользователя через addgroup. Требуется сменить пароль, иначе не работает логин
+Vagrant.configure("2") do |config|
+	config.vm.box = "alpine/alpine64"
+	vm_name = "alpine-vm01"
+	config.vm.define "#{vm_name}"
+	config.vm.boot_timeout = 1000
+
+
+	config.vm.provision "shell" do |s|
+	  	s.inline = <<-SHELL
+	  		echo 'Add new user "uav"...'
+	  		if $(awk -F: '{ print $1}' /etc/passwd | grep -sq '^uav$'); then
+	  			echo 'User "uav" exists...'
+	  		else
+	  			sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
+	  			/etc/init.d/sshd restart > /dev/null
+	  			PUID=1001
+	  			PGID=1001
+	  			# Ниже экранируем слэш в пароле 1Gx4GeWZ/SiMY
+	  			addgroup -g ${PGID} uav && adduser -D -u ${PUID} -G uav -g "Udovichenko A.V." uav
+	  			sed -i 's/uav:!:17917:0:99999:7:::/uav:1Gx4GeWZ\/SiMY:17917::::::/g' /etc/shadow
+	  			mkdir -p /home/uav/.ssh/
+	  			touch /home/uav/.ssh/authorized_keys
+	  			chown -R uav:uav /home/uav/.ssh
+	  			chmod 0700 /home/uav/.ssh
+	  			chmod 0600 /home/uav/.ssh/authorized_keys
+	  		fi
+	  	SHELL
+	end
+
+	config.vm.provision "shell" do |s|
+	  	if File.file?("#{Dir.home}/.ssh/id_rsa.pub")
+	  		ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+	  		s.inline = <<-SHELL
+	  			if grep -sq "#{ssh_pub_key}" /home/uav/.ssh/authorized_keys; then
+	  				echo '"uav" user SSH keys already provisioned.'
+	  			else
+	  				echo 'Begin "uav" user SSH keys provisioning...'
+	  				echo #{ssh_pub_key} >> /home/uav/.ssh/authorized_keys
+	  			fi
+	  		SHELL
+	  	else
+	  		s.inline = <<-SHELL
+	  			echo "No user SSH key found. You will need to remedy this before pushing it."
+	  		SHELL
+	  	end
+	end
+
+	config.vm.synced_folder "data/", "/srv/data",
+		owner: "root", group: "root"
+	config.vm.synced_folder ".", "/vagrant", disabled: true
+
+	config.vm.provider "virtualbox" do |v|
+		v.name = "#{vm_name}" # Имя ВМ в VirtualBox
+		v.memory = "2048" # ОЗУ
+		v.customize ["modifyvm", :id, "--vram", "128"] # Видеопамять
+		v.cpus = 2 # Виртуальные CPU
+	end
+end

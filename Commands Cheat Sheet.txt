@@ -15,3 +15,7 @@ vagrant box add <имя сборки> <url для загрузки>
 # Уничтожаем ВМ
 vagrant halt
 vagrant destroy
+vagrant destroy -f
+
+# Перезапуск провижина
+vagrant provision
