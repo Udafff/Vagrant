@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    vm_lab_name = "lab01"
+    
+    vagrant_files = %w[\
+            ../machines/srv01.rb \
+            ../machines/srv02.rb]
+    
+    vagrant_files.each do |vm_file|
+        vm = File.expand_path(vm_file, __FILE__)
+        eval File.read(vm) if File.exists?(vm)
+    end
+
+end
