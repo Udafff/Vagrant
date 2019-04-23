@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: Hostname and Network setup
+      become: yes
+      hostname:
+        name: "ansible-vm02"
