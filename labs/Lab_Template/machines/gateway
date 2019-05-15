@@ -1,7 +1,7 @@
 vm_name = "gateway"
 vm_box = "bento/ubuntu-18.10"
 
-config.vm.define "#{vm_name}" do |config|
+config.vm.define "#{vm_name}" do |config|    
     config.vm.box = "#{vm_box}"
     config.vm.hostname = "#{vm_name}"
     config.vm.define "#{vm_name}"
@@ -15,7 +15,7 @@ config.vm.define "#{vm_name}" do |config|
 
     # Provisioners - Ansible
     config.vm.provision "ansible_local" do |ansible|
-        ansible.playbook = "/share/playbooks/01_init.yml"      
+        ansible.playbook = "/share/playbooks/01_init.yml"
         ansible.verbose = true
     end
 
