@@ -1,0 +1,2 @@
+VM data folders synced to the /share/data folder.
+One folder for each VM.
